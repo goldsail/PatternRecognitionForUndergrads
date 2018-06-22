@@ -1,0 +1,183 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{titletoc}
+\usepackage{titlesec}
+\usepackage{geometry} 
+\usepackage{fontspec, xunicode, xltxtra}
+\usepackage{float}
+\usepackage{cite}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{titletoc}
+\usepackage{bm}
+
+\geometry{left=3cm,right=3cm,top=3cm,bottom=3cm}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\var}{var}
+\DeclareMathOperator*{\expec}{E}
+
+\begin{document}
+\title{\textsf{Homework 5 for Pattern Recognition}}
+\author{Fan JIN\quad (2015011506)}
+\maketitle
+
+\section*{Question 1.1}
+{
+    The optimal hyperplane satisfies $$f(x) = \sum_{i=1}^{n}{\alpha_i^{*} y_i K(x, x_i)} + b = 0.$$
+    \begin{itemize}
+        \item \textbf{(b)(d)(f) are of Gaussian kernels.}\quad This is obvious since the support vectors are distributed not only near the hyperplane, but also on the other side away from the hyperplane. This is a property of the Gaussian kernels. Moreover, \textbf{(d)} corresponds to $\sigma=0.1$ because it tends to overfit the positive samples. \textbf{(b)} must be with $\sigma=1$, as it has a straighter separate line. And \textbf{(f)} is in the middle, with $\sigma=0.5$.
+
+        \item \textbf{(c) is of linear kernels.}\quad The hyperplane would follow a linear function of $x$ if the kernel $K(x, x_i)$ is linear. Thus, the straight line indicates a linear kernel in \textbf{(c)}.
+
+        \item \textbf{(a) is of quadratic kernels.}\quad The The hyperplane would follow a quadratic function of $x$ if the kernel $K(x, x_i)$ is quadratic. This can be shown using the fact that $$(w^T x)^2 = (w^T x)^T (w^T x) = x^T (w w^T) x,$$ which is a quadratic form. The parabola thus indicates a quadratic kernel in \textbf{(a)}.
+
+        \item \textbf{(e) is of cubic kernels.}\quad Similar to the quadratic kernels, a cubic hyperplane may come from the linear combination of many cubic terms with respect to $x$.
+    \end{itemize}
+}
+
+\section*{Question 1.2}
+{
+    We prefer the linear kernel since the samples are linearly separable. The linear kernel, as long as feasible, means \emph{mathematical simplicity, intuitive interpretability, simple calulation,} as well as \emph{property of superpostion}. For example, the linear dot product can be interpreted as projection to a certain direction in the space, while nonlinear ones hardly have such an intuitive demonstration. 
+}
+
+\section*{Question 2}
+{
+    \subsection*{SVM-based classifiers}
+    {
+        Thanks to the ``Generate Code'' function of the Classification Learner toolbox in MATLAB, I saved the code of all the 6 SVM kernels in 6 function files: Linear, Quadratic, Cubic, Gaussian Fine ($\sigma=0.1$), Gaussian Medium ($\sigma=0.5$), and Gaussian Coarse ($\sigma=1$). See Table 1 for the results.
+
+        \begin{table}[!hbp]
+            \centering
+            \begin{tabular}{|c|c|c|}
+            \hline
+            Method & Testing accuracy & Training speed \\
+            \hline
+            \hline
+            Linear SVM & 0.975389 & 1\textasciitilde 3 mins\\
+            \hline
+            Quadratic SVM & 0.982923 & 1\textasciitilde 3 mins\\
+            \hline
+            Cubic SVM & 0.983928 & 1\textasciitilde 3 mins\\
+            \hline
+            Gaussian Fine SVM & 0.546459 & 1\textasciitilde 3 mins\\
+            \hline
+            Gaussian Medium SVM & 0.976896 & 1\textasciitilde 3 mins\\
+            \hline
+            Gaussian Coarse SVM & 0.967855 & 1\textasciitilde 3 mins\\
+            \hline
+            \hline
+            Fully Connected NN & 0.979407 & 30 secs\\
+            \hline
+            Logistic Regression & 0.952788 & 5\textasciitilde 10 mins\\
+            \hline
+            \hline
+            Naive Bayes Classifier & 0.760924 & 5 secs\\
+            \hline
+            \end{tabular}
+            \caption{Accuracy on testing set}
+        \end{table}
+    }
+
+    \subsection*{FCNN-based classifiers}
+    {
+        In homework 4, we tried different sizes of the hidden layer, ranging from $5$, $10$, $20$, $40$, to $100$. Here is a copy of our conclusion in homework 4:
+
+        \begin{itemize}
+            \item \textbf{Confusion matrix:}\quad With more hidden nodes, the confusion rate drops accordingly. See the table below. 
+            \begin{table}[htb!]
+                \centering
+                \begin{tabular}{|c|c|}
+                \hline
+                Hidden nodes & Total confusion rate \\
+                \hline
+                5 & 11.5\% \\
+                \hline
+                10 & 8.9\% \\
+                \hline
+                20 & 5.6\% \\
+                \hline
+                40 & 2.9\% \\
+                \hline
+                100 & 1.9\% \\
+                \hline
+                \end{tabular}
+                \caption{Confusion rates}
+            \end{table}
+
+            \item \textbf{Performance:}\quad With more hidden nodes, the error rates drop at both validation set and testing set. Meanwhile, it takes a longer time before it stops and converges, in spite of fewer iterations. Another interpretation: The network has better capability of fitting the pattern with more hidden nodes, and therefore the training process is smoother and we need fewer iterations in training. But it takes more time since we have much more parameters to train, which leads to a longer time for each iteration step. 
+            \begin{table}[htb!]
+                \centering
+                \begin{tabular}{|c|c|}
+                \hline
+                Hidden nodes & Total training epochs \\
+                \hline
+                5 & 500 \\
+                \hline
+                10 & 185 \\
+                \hline
+                20 & 125 \\
+                \hline
+                40 & 125 \\
+                \hline
+                100 & 110 \\
+                \hline
+                \end{tabular}
+                \caption{Training iterations}
+            \end{table}
+
+            \item \textbf{ROC curve:}\quad With more hidden nodes, the ROC curve is closer to the left top corner, which indicates a better performance of classification. 
+        \end{itemize}
+
+        It is obvious that a size of $100$ hidden nodes makes the best performance. The accuracy on the testing set is attached to Table 1.
+    }
+
+    \subsection*{Logistic-regression-based classifiers}
+    {
+        We use the logistic regression classifier in the Classification Learner toolbox. The accuracy on the testing set is attached to Table 1.
+    }
+
+    \subsection*{Naive Bayes classifiers}
+    {
+        There is no toolbox provided, so we manually call ``fitcnb'' function in MATLAB to train a naive Bayes model. The accuracy on the testing set is attached to Table 1. The training speed is ultrafast, only seconds.
+    }
+
+    \subsection*{Comparison}
+    {
+        We obtain the testing accuracy, as well as the training speed, in Table 1. 
+        
+        \begin{itemize}
+            \item \textbf{SVM:}\quad The SVM-based classifier with a cubic kernel function achieves the highest accuracy on the testing set. The SVM with a fine Gaussian kernel has been overfitting the data, since $\sigma=0.1$ is too small and it makes the exponential term decay too fast. However, it takes minutes to train the model, which is not so competitive as the FCNN in terms of training speed.
+
+            \item \textbf{FCNN and LR:}\quad Fully connected neural network with a hidden layer of 100 nodes also attains a high accuracy, with a training process faster than the SVMs above. It overwhelms the logistic regression model, which can be interpreted as a FCNN with no hidden layer. Here we see the crutial importance of the hidden layer. The additional layer provides a high capacity when fitting nonlinear function. 
+        
+            \item \textbf{Naive Bayes:}\quad The accuracy is not satisfactory, but it is super fast in training, much faster than other methods. I suppose that possible ways to improve this include feature selection and PCA. It also helps if we use advanced Bayes classifiers in place of the Naive Bayes classifier. 
+        \end{itemize}
+
+    }
+}
+
+\section*{Source Code}
+{
+    Please download the souece code from http://39.106.23.58/files/PR5\_2015011506.7z
+
+    For Question 2, please run ``main.m''. It may take minutes to train the network, but the result is reproducible because of the random seed.
+
+    For each model, I clicked ``Generate code'' button to transcript my operations into MATLAB codes, and stored each of them in the corresponding ``.m'' file. These files include:
+    \begin{itemize}
+        \item trainClassifierCubic.m
+        \item trainClassifierLinear.m
+        \item trainClassifierQuadratic.m
+        \item trainClassifierGaussianFine.m
+        \item trainClassifierGaussianMedium.m
+        \item trainClassifierGaussianCoarse.m
+        \item trainClassifierFullyConnected.m
+        \item trainClassifierLogistic.m
+    \end{itemize}
+    Thus, the steps above can be easily reproduced without using the GUI of the toolbox. 
+
+}
+
+\clearpage
+\end{document}
+    
